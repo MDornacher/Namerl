@@ -1,4 +1,4 @@
-/* Baby Name Swiper - Filter logic (ported from Python) */
+/* Namerl - Filter logic (ported from Python) */
 "use strict";
 
 const Filters = (() => {

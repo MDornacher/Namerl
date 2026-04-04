@@ -1,4 +1,4 @@
-/* Baby Name Swiper - Canvas frequency chart */
+/* Namerl - Canvas frequency chart */
 "use strict";
 
 const Chart = (() => {

@@ -1,4 +1,4 @@
-/* Baby Name Swiper - Main application logic */
+/* Namerl - Main application logic */
 "use strict";
 
 const App = (() => {

@@ -1,4 +1,4 @@
-/* Baby Name Swiper - Swipe gesture handling via Pointer Events */
+/* Namerl - Swipe gesture handling via Pointer Events */
 "use strict";
 
 const Swipe = (() => {
