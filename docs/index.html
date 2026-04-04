@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baby Name Swiper</title>
+  <meta name="description" content="Swipe through Austrian baby names, filter by popularity, length, and letters. Data from Statistik Austria.">
+  <link rel="stylesheet" href="css/style.css">
+  <script>
+    // Set theme before first render to avoid flash
+    (function() {
+      var t = localStorage.getItem("bns_theme");
+      if (!t) t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", t);
+    })();
+  </script>
+</head>
+<body>
+  <header class="header">
+    <div class="gender-toggle" role="radiogroup" aria-label="Gender selection" data-active="boys">
+      <button class="gender-toggle__btn gender-toggle__btn--active" data-gender="boys" aria-checked="true" role="radio" aria-label="Boys">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="13.5" r="7"/><path d="M16 8l5-5"/><path d="M21 3h-5"/><path d="M21 3v5"/></svg>
+      </button>
+      <button class="gender-toggle__btn" data-gender="girls" aria-checked="false" role="radio" aria-label="Girls">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="7"/><path d="M12 16v6"/><path d="M9 19h6"/></svg>
+      </button>
+    </div>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+      <svg class="theme-toggle__moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="theme-toggle__sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="4.22" x2="19.78" y2="5.64"/></svg>
+    </button>
+  </header>
+
+  <main class="main">
+    <div class="card-area">
+      <div class="card" id="name-card">
+        <div class="card__name" id="name-display" aria-live="polite">Loading...</div>
+        <div class="card__stats" id="name-stats"></div>
+        <canvas class="card__chart" id="name-chart" width="320" height="140" role="img" aria-label="Yearly frequency chart"></canvas>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="actions__btn actions__btn--dislike" id="btn-dislike" aria-label="Dislike">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <button class="actions__btn actions__btn--undo" id="btn-undo" aria-label="Undo" disabled>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+      </button>
+      <button class="actions__btn actions__btn--like" id="btn-like" aria-label="Like">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+    </div>
+
+    <div class="progress" id="progress-bar">
+      <div class="progress__fill" id="progress-fill"></div>
+      <span class="progress__text" id="progress-text"></span>
+    </div>
+  </main>
+
+  <button class="filter-fab" id="filter-fab" aria-label="Open filters">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+  </button>
+
+  <aside class="drawer" id="filter-drawer" aria-hidden="true">
+    <div class="drawer__backdrop" id="drawer-backdrop"></div>
+    <div class="drawer__panel">
+      <div class="drawer__header">
+        <h2>Filters</h2>
+        <button class="drawer__close" id="drawer-close" aria-label="Close filters">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="drawer__body" id="filter-form">
+        <fieldset>
+          <legend>Letters</legend>
+          <div class="filter-grid">
+            <label>Starts with <input type="text" id="f-starts" placeholder="A, B"></label>
+            <label>NOT starts <input type="text" id="f-not-starts" placeholder="X, Y"></label>
+            <label>Ends with <input type="text" id="f-ends" placeholder="A, E"></label>
+            <label>NOT ends <input type="text" id="f-not-ends" placeholder="S"></label>
+            <label>Contains <input type="text" id="f-contains" placeholder="AN, EL"></label>
+            <label>NOT contains <input type="text" id="f-not-contains" placeholder="SCH, TH"></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Length</legend>
+          <div class="filter-grid">
+            <label>Min <input type="number" id="f-min-len" placeholder="1" min="1" max="30"></label>
+            <label>Max <input type="number" id="f-max-len" placeholder="30" min="1" max="30"></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Popularity</legend>
+          <div class="filter-grid">
+            <label>Min occurrences <input type="number" id="f-min-occ" placeholder="0" min="0" step="10"></label>
+            <label>Skip top N <input type="number" id="f-skip-top" placeholder="0" min="0" step="5"></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Characters</legend>
+          <label class="checkbox"><input type="checkbox" id="f-no-hyphens"> No hyphens</label>
+          <label class="checkbox"><input type="checkbox" id="f-no-special"> No umlauts</label>
+        </fieldset>
+        <fieldset>
+          <legend>Ordering</legend>
+          <label>Randomness
+            <input type="range" id="f-randomness" min="0" max="1" step="0.1" value="0.3">
+            <span class="range-value" id="f-randomness-value">0.3</span>
+          </label>
+        </fieldset>
+        <div class="drawer__actions">
+          <button class="btn btn--primary" id="btn-apply">Apply Filters</button>
+          <button class="btn btn--secondary" id="btn-shuffle">New Shuffle</button>
+          <button class="btn btn--danger" id="btn-reset">Reset Progress</button>
+          <label class="btn btn--secondary">
+            Import liked names
+            <input type="file" id="btn-import" accept=".json" hidden>
+          </label>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <section class="liked-section" id="liked-section" hidden>
+    <h2 id="liked-heading"></h2>
+    <ul class="liked-list" id="liked-list"></ul>
+    <div class="liked-actions">
+      <button class="btn btn--secondary" id="btn-export">Export</button>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <details class="footer__about">
+      <summary>About this app</summary>
+      <div class="footer__about-body">
+        <p>An app for soon-to-be parents faced with the taunting task of finding a unique yet recognizable name. Swipe through names, apply filters to match your preferences, and compare your matches.</p>
+        <p>The data comes from <a href="https://www.statistik.at/atlas/vornamen/" target="_blank" rel="noopener">Statistik Austria</a> and covers every baby born in Austria since 1984. From 2010 onward, the dataset includes all births regardless of citizenship.</p>
+        <p>Data is grabbed from <a href="https://data.statistik.gv.at/data/OGDEXT_VORNAMEN_1.csv" target="_blank" rel="noopener">Statistik Austria</a> and reprocessed automatically once new data arrives. The full dataset and source code are available on <a href="https://github.com/MDornacher/Namerl" target="_blank" rel="noopener">GitHub</a>.</p>
+        <p>Have you found any issues or have a suggestion on how to improve? Open an issue or pull request!</p>
+      </div>
+    </details>
+    <p class="footer__links">
+      <a href="https://www.data.gv.at/datasets/603066f6-0f0a-3806-b394-f14b7d2cb437" target="_blank" rel="noopener">Dataset</a>
+      &middot;
+      <a href="https://www.statistik.at/atlas/vornamen/" target="_blank" rel="noopener">Atlas der Vornamen</a>
+      &middot;
+      <a href="https://github.com/MDornacher/Namerl" target="_blank" rel="noopener">Source</a>
+    </p>
+    <p class="footer__made-by">
+      Made by soon-to-be dad <a href="https://github.com/MDornacher" target="_blank" rel="noopener">Manuel Lanzinger</a>
+    </p>
+  </footer>
+
+  <dialog class="shortcuts-dialog" id="shortcuts-dialog">
+    <div class="shortcuts-dialog__header">
+      <h2>Keyboard shortcuts</h2>
+      <button class="shortcuts-dialog__close" id="shortcuts-close" aria-label="Close">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <dl class="shortcuts-list">
+      <div class="shortcut"><dt><kbd>&rarr;</kbd></dt><dd>Like name</dd></div>
+      <div class="shortcut"><dt><kbd>&larr;</kbd></dt><dd>Dislike name</dd></div>
+      <div class="shortcut"><dt><kbd>Ctrl</kbd> <kbd>Z</kbd></dt><dd>Undo</dd></div>
+      <div class="shortcut"><dt><kbd>F</kbd></dt><dd>Toggle filters</dd></div>
+      <div class="shortcut"><dt><kbd>G</kbd></dt><dd>Switch gender</dd></div>
+      <div class="shortcut"><dt><kbd>D</kbd></dt><dd>Toggle dark mode</dd></div>
+      <div class="shortcut"><dt><kbd>Esc</kbd></dt><dd>Close drawer</dd></div>
+      <div class="shortcut"><dt><kbd>?</kbd></dt><dd>This dialog</dd></div>
+    </dl>
+  </dialog>
+
+  <script src="js/filters.js"></script>
+  <script src="js/chart.js"></script>
+  <script src="js/swipe.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
