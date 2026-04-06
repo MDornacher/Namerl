@@ -2,7 +2,18 @@
 
 Yet another baby name matching app, but based on actual Austrian baby name data, packaged into a free and easy to use static website without adds or tracking.
 
-[Live app](https://namen.lanzinger.space/)
+**[→ Live app](https://namen.lanzinger.space/)**
+
+
+## Screenshots
+
+<table>
+  <tr>
+    <td><img src="screenshots/light-mode.png" alt="Light mode"></td>
+    <td><img src="screenshots/dark-mode.png" alt="Dark mode"></td>
+    <td><img src="screenshots/filters.png" alt="Filters"></td>
+  </tr>
+</table>
 
 ## Data
 
