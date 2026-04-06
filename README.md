@@ -36,3 +36,8 @@ uv run ruff format
 uv run mypy data_processing.py
 node tests/test_filters.js
 ```
+
+## Credits
+
+- Data: [Statistik Austria](https://www.statistik.at/) via [data.gv.at](https://www.data.gv.at/)
+- App icon: [baby](https://lucide.dev/icons/baby) from [Lucide](https://lucide.dev/)

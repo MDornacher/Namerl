@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Namerl</title>
   <meta name="description" content="Swipe through Austrian baby names, filter by popularity, length, and letters. Data from Statistik Austria.">
+  <meta name="theme-color" content="#6366f1">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
   <link rel="stylesheet" href="css/style.css">
   <script>
     // Set theme before first render to avoid flash
@@ -137,6 +140,7 @@
         <p>An app for soon-to-be parents faced with the taunting task of finding a unique yet recognizable name. Swipe through names, apply filters to match your preferences, and compare your matches.</p>
         <p>The data comes from <a href="https://www.statistik.at/atlas/vornamen/" target="_blank" rel="noopener">Statistik Austria</a> and covers every baby born in Austria since 1984. From 2010 onward, the dataset includes all births regardless of citizenship.</p>
         <p>Data is grabbed from <a href="https://data.statistik.gv.at/data/OGDEXT_VORNAMEN_1.csv" target="_blank" rel="noopener">Statistik Austria</a> and reprocessed automatically once new data arrives. The full dataset and source code are available on <a href="https://github.com/MDornacher/Namerl" target="_blank" rel="noopener">GitHub</a>.</p>
+        <p>Can be installed as a convenient progressive web app on your phone. Your liked names are stored in your browser only. Nothing is tracked.</p>
         <p>Have you found any issues or have a suggestion on how to improve? Open an issue or pull request!</p>
       </div>
     </details>
@@ -175,5 +179,10 @@
   <script src="js/chart.js"></script>
   <script src="js/swipe.js"></script>
   <script src="js/app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js");
+    }
+  </script>
 </body>
 </html>
